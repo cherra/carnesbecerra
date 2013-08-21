@@ -2,6 +2,7 @@
 config.h
 config.log
 config.status
+Makefile
 po/Makefile
 po/Makefile.in
 src/Makefile
