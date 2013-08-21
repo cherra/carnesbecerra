@@ -1,3 +1,11 @@
+#Build tools
+config.h
+config.log
+config.status
+po/Makefile
+po/Makefile.in
+src/Makefile
+
 # Object files
 *.o
 
@@ -15,3 +23,4 @@
 *.exe
 *.out
 *.app
+src/carnesbecerra
