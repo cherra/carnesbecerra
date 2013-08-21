@@ -5714,7 +5714,7 @@ $as_echo "#define HAVE_LC_MESSAGES 1" >>confdefs.h
 
     CATOBJEXT=NONE
     XGETTEXT=:
-    INTLLIBS="-L/usr/lib/mysql -lmysqlclient -lz"
+    INTLLIBS=" -lgmodule-2.0 -L/usr/lib/mysql -lmysqlclient -lz"
 
     ac_fn_c_check_header_mongrel "$LINENO" "libintl.h" "ac_cv_header_libintl_h" "$ac_includes_default"
 if test "x$ac_cv_header_libintl_h" = x""yes; then :
