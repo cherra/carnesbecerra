@@ -6,6 +6,10 @@ Makefile
 po/Makefile
 po/Makefile.in
 src/Makefile
+src/.deps
+
+#Netbeans
+nbproject
 
 # Object files
 *.o
