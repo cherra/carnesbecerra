@@ -1,0 +1,26 @@
+# /dev/lp0
+# /dev/ttyS1
+# Primer parametro: tipos de impresion -> credito, contado, factura, corte_caja, credito_abono, corte_caja_all, pedidos_paso1, default
+# Segundo parametro: tipos de impresora -> serial, paralelo, cups, printfile
+# Tercer parametro: puerto -> número en caso que sea serial o paralelo (ej. 0 para lp0 o ttyS0), cadena de caracteres
+#   para indicar el nombre de la impresora en caso de que sea cups o printfile (prfile32 para windows).
+# Cuarto parametro: numero de impresiones.
+# Quinto parametro: host -> solo para cups (puede ser nombre del host o la IP)
+#
+# Esto es para las impresoras termicas (copia), por default solo imprime una vez
+#dobleimpresion
+#
+# Si la caja no cuenta con cajon electronico, el default es con cajon
+sincajon
+#
+# Se define la cantidad de caracteres por linea que soporta la mini printer, por default es 40, las termicas epson manejan hasta 52
+#anchoticket 52
+#
+credito	cups	miniprinter	1	localhost
+contado	cups	miniprinter	1	cherra
+factura cups miniprinter 1 cherra
+corte_caja cups miniprinter 1 localhost
+credito_abono serial 1 1
+corte_all_caja cups miniprinter 1 localhost
+pedidos_paso1 cups miniprinter 1 localhost
+default cups miniprinter 1 localhost

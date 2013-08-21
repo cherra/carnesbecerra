@@ -1,0 +1,10 @@
+# /dev/lp0
+# /dev/ttyS1
+sincajon
+credito paralelo 0
+contado paralelo 0
+factura paralelo 0
+corte_caja paralelo 0
+credito_abono paralelo 0
+corte_all_caja paralelo 0
+pedidos_paso1 paralelo 0

@@ -1,0 +1,60 @@
+Versión 2.9.15
+25/julio/2012
+* Se agregó la función de capturar el número de cuenta al momento de elegir la
+forma de pago, esto para cumplir con los requisitos del CFD 2.2
+* Se modificó la forma como se capturan los vales, para que en caso de que el
+vale sea una devolución y esté marcado en la base de datos como 'entrada', las
+cantidades sean negativas para que se reestablezcan en el inventario.
+* Se agregaron lineas para firmas en los tickets de vales.
+
+Versión 2.9.14
+18/junio/2012
+* Se cambió el primer digito que se imprime en los códigos de barras en vales
+(ahora es un 9) para diferenciar los codigos de los impresos por basculas
+(imprimen 8). Para que el módulo de entradas a almacén diferencia el codigo
+porque los codigos de basculas consideran 2 digitos para kilos y los codigos
+de vales consideran 3.
+
+Versión 2.9.12
+23/enero/2012
+* Se quitó la validación para que no aceptara el vendedor "00" en los códigos de barras. Ahora ya lo acepta.
+
+Versión 2.9.11
+13/octubre/2011
+* Se agregó el campo de e-mail para el catálogo de clientes. Se puede capturar en el formulario de nuevo cliente y en el formulario para facturar.
+* Se cambio el registro de comisiones por vendedor, ahora siempre asigna el vendedor a la linea del ticket, solo valida que esté dentro de su horario para aplicar o no la comision.
+* Se agregó en el ticket de venta los vendedores que atendieron.
+
+Versión 2.9.10
+22/septiembre/2011
+* Se agregó la función de que registre el número de vendedor en cada linea del ticket.
+* Se limitó el registro de vendedor por linea del ticket para que solo lo haga en los horarios asignados.
+* Cuando se agrega un producto de forma manual, ahora pide el número de vendedor.
+
+Versión 2.9.9
+13/julio/2011
+* Se cambiaron los labels de la pantalla principal que mostraban el IVA. Se eliminó el IVA(0) y se modificó el IVA(15) para que tome el valor que está entre () de la tabla Configuracion de la base de datos.
+* Se hizo lo mismo que el punto anterior pero en los tickets de venta.
+* Se agregó un '*' en los artículos que llevan IVA en las facturas.
+* Se cambió la consulta a la base de datos al buscar artículos para que no muestre los que no tengan código.
+* Se ocultó la opción de "Artículos" del menú porque es obsoleta.
+
+Versión 2.9.7
+16/abr/2011
+* Se agrego la función de impresión de códigos de barras al imprimir vales. Esta función sirve para poder dar entrada a almacen en sucursales.
+* Se corrigió un error que había al reimprimir un vale (imprimía la venta).
+
+Versión 2.9.6
+08/mar/2011
+* Se desactivó la opción que genera las comisiones para los vendedores que tienen clientes asignados. Ahora se generan en el módulo administrativo
+* Se corrigió el problema de que no reimprimía los tickets de Prueba.
+* Se mejoró la función que lee el archivo de configuración de impresoras, ahora se pueden separar los parametros con espacios y/o tabuladores.
+* Se validó para en el caso de que el módulo de CFD (PHP) no esté instalado correctamente arroje un mensaje de error.
+
+Versión 2.9.5
+* Se agregó la función para poder establecer el número de impresiones por tipo de impresión en el archivo de configuración de impresoras.
+* Se corrigieron lineas con la función sprintf (marcaba warnings al momento de compilar).
+
+Versión 2.9.4
+* Se modificó el módulo de facturación para generar CFDs, lo hace a través de un comando externo escrito en PHP (~/cfd/factura_electronica.php)
+* Se ampliaron algunas variables tipo char[]  ya que las cadenas que se almacenaban en algunos casos eran mas grandes y esto provocaba que el sistema tronara en Ubuntu (extrañamente no lo hacía en Fedora).
