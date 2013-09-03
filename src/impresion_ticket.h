@@ -46,20 +46,7 @@ MYSQL_ROW row, row2;
 FILE *fpt, *fpt2, *fptlogo, *fpttemp; //Declaracion del archivo
 
 char tipoPago[20]="";
-char TicketImpresion[]               = "impresion/impresiones-tmp.txt";
-char TicketArriba[]                  = "impresion/ticket-arriba.txt";
-char TicketArribaServicioDomicilio[] = "impresion/ticket-servicio_domicilio_arriba.txt";
-char TicketAbajoServicioDomicilio[]  = "impresion/ticket-servicio_domicilio_abajo.txt";
-char TicketAbajo[100]                = "";
-char TicketAbajoCredito[]            = "impresion/ticket-abajo-credito.txt";
-char TicketAbajoContado[]            = "impresion/ticket-abajo-contado.txt";
-char AbrirCajon[]                    = "impresion/abrircajon.txt";
 
-char TicketLogo[] = "impresion/logo.epson";
-char TicketReimpresion[] = "impresion/reimpresion.epson";
-char FacturaConfig[] = "impresion/factura.conf.txt";
-char CobranzaConfig[] = "impresion/cobranza.conf.txt";
-char ImpresoraConfig[] = "impresion_conf/impresoras.conf.txt";
 char c[1500]; //Aqui se guarda las cadenas a imprimir
 int fac_nombre[99][4];
 int impresora_nombre[99][4];
@@ -1295,7 +1282,7 @@ int imprimirticket(char *id_venta_char, char tipo[20], double pago_num, ...){
 */
 		fpt2 = fopen(ImpresoraConfig,"r");
 		if(fpt2 == NULL){
-			printf("\nERROR no se puede abrir el archivo de configuracion de las impresoras");
+			printf("\nERROR no se puede abrir el archivo de configuracion de las impresoras: %s\n", ImpresoraConfig);
 			imprimiendo = FALSE;
 			return (1);
 		}else{
@@ -7967,7 +7954,7 @@ int checar_puerto_serie(){
 //char *consulta = "default"; //Nombre de la impresora
 char impresora[100];
 
-char ImpresoraConfig[] = "impresion_conf/impresoras.conf.txt"; //Nombre del archivo de configuracion
+//char ImpresoraConfig[] = "impresion_conf/impresoras.conf.txt"; //Nombre del archivo de configuracion
 char c[1000]; //Aqui se guarda las cadenas a imprimir
 char cadconf[50];
 int i, j, k, m;

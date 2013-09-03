@@ -38,14 +38,14 @@ MYSQL mysql;
 MYSQL_RES *resultado, *resultado2;
 MYSQL_ROW row, row2;
 FILE *fpt, *fpt2; //Declaracion del archivo
-char TicketImpresion[] = "impresion/impresiones-tmp.txt";
-char TicketArriba[] = "impresion/ticket-arriba.txt";
+char TicketImpresion[] = "~/.carnesbecerra/impresion/impresiones-tmp.txt";
+char TicketArriba[] = "~/.carnesbecerra/impresion/ticket-arriba.txt";
 char TicketAbajo[100] = "";
-char TicketAbajoCredito[] = "impresion/ticket-abajo-credito.txt";
-char TicketAbajoContado[] = "impresion/ticket-abajo-contado.txt";
-char FacturaConfig[] = "impresion/factura.conf.txt";
-char CobranzaConfig[] = "impresion/cobranza.conf.txt";
-char ImpresoraConfig[] = "impresion/impresoras.conf.txt";
+char TicketAbajoCredito[] = "~/.carnesbecerra/impresion/ticket-abajo-credito.txt";
+char TicketAbajoContado[] = "~/.carnesbecerra/impresion/ticket-abajo-contado.txt";
+char FacturaConfig[] = "~/.carnesbecerra/impresion/factura.conf.txt";
+char CobranzaConfig[] = "~/.carnesbecerra/impresion/cobranza.conf.txt";
+char ImpresoraConfig[] = "~/.carnesbecerra/impresion/impresoras.conf.txt";
 char c[1000]; //Aqui se guarda las cadenas a imprimir
 int fac_nombre[99][4];
 int impresora_nombre[99][4];

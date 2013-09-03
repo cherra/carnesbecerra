@@ -64,13 +64,13 @@ int manda_imprimir(char nombrearchivo[50], char *consulta){
 //char *consulta = "default"; //Nombre de la impresora
 char impresora[100];
 
-char ImpresoraConfig[] = "impresion_conf/impresoras.conf.txt"; //Nombre del archivo de configuracion
+//char ImpresoraConfig[] = "impresion_conf/impresoras.conf.txt"; //Nombre del archivo de configuracion
 char c[1000]; //Aqui se guarda las cadenas a imprimir
 char cadconf[50];
 char *cadena_despues_de_trim;
 int i, j, k, m;
 int error = 0;
-int impresiones = 1;
+char impresiones[8];
 //Parametros.
 int par1 = -1;
 int par2 = -1;
@@ -106,9 +106,7 @@ printf("\nSacando informacion de la configuracion %s",consulta);
 							
 							//printf("\n	Cadenas de conf: %s",cadconf);
 							if(k==0){
-								if(strcmp(cadconf, "dobleimpresion") == 0){
-									impresiones = 2; //Doble impresion para impresora termica
-								}else if(strcmp(cadconf, consulta) == 0){
+								if(strcmp(cadconf, consulta) == 0){
 									par1 = 0; //Indica que se metio
 								}else{
 									//error = 1;
@@ -125,7 +123,10 @@ printf("\nSacando informacion de la configuracion %s",consulta);
 								strcpy(par3,cadconf);
 								//printf("->Puerto %s\n<-",cadconf);
 							}else if(k==3){
-								impresiones = atoi(cadconf);
+								sprintf(impresiones, "%s", cadconf);
+                                                                if(atoi(impresiones) <= 0){
+                                                                    sprintf(impresiones, "%s", "1");
+                                                                }
 								//printf("Numero de copias: %s\n<-",cadconf);
 							}else if(k==4){
 								/*trim(cadconf);
@@ -172,7 +173,7 @@ printf("\nSacando informacion de la configuracion %s",consulta);
 					strcat(impresora,par3);
 				break;
 				case 2: //cups
-					strcpy(impresora,"lp.cups -d ");
+					strcpy(impresora,"lp -d ");
 					strcat(impresora,par3);
 					if (strcmp (consulta,"default") == 0)
 					{
@@ -183,7 +184,11 @@ printf("\nSacando informacion de la configuracion %s",consulta);
 						strcat(impresora," -o raw -h ");
 					}
 					strcat(impresora,par4);
-				    	strcat(impresora,"  ");
+				    	strcat(impresora," ");
+                                        strcat(impresora,"-n ");
+                                        strcat(impresora, impresiones);
+                                        strcat(impresora," ");
+                                        //strcat(impresora, impresiones);
 					strcat(impresora,nombrearchivo);
 				break;
 				case 3: //print file 32
@@ -198,8 +203,8 @@ printf("\nSacando informacion de la configuracion %s",consulta);
 	if(error != 1){
 		printf("\nCadena de la Impresion: ->%s<--",impresora);
 		printf("\n");
-		for(i=0;i<impresiones;i++)
-			system(impresora);
+		//for(i=0;i<impresiones;i++)
+                system(impresora);
 		//system(impresora);   //DOBLE IMPRESION
 		return(0);
 	}else{

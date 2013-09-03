@@ -50,7 +50,7 @@ int conecta_bd_2(MYSQL *conexion)
 	char *error ;
 	if(leerconf == true)
 	{
-		if((fconfiguracionbd = fopen("configuracionbd.dat","r")))
+		if((fconfiguracionbd = fopen(file_db_config,"r")))
 		{
 			printf("Si hay archivo...  \n");
 			while(!feof(fconfiguracionbd))
@@ -224,7 +224,7 @@ MYSQL_RES *conecta_bd_3(char *SQL)
 	
 	if(leerconf == true)
 	{
-		if((fconfiguracionbd = fopen("configuracionbd.dat","r")))
+		if((fconfiguracionbd = fopen(file_db_config,"r")))
 		{
 			printf("Si hay archivo...  \n");
 			while(!feof(fconfiguracionbd))
@@ -614,7 +614,8 @@ char tipo_de_interface()
 	int i=0;
 	int j=0;
 
-	if((fconfiguracionbd = fopen("configuracionbd.dat","r")))
+        printf("El archivo de configuracion de conexión: %s \n", file_db_config);
+	if((fconfiguracionbd = fopen(file_db_config,"r")))
 	{
 		while(!feof(fconfiguracionbd))
 		{

@@ -56,6 +56,17 @@ int sport; /* Variable para el descriptor del puerto serial */
 
 float iva=0;
 
+char *homedir;  // Directorio HOME del usuario
+char file_db_config[128];  // Variable para almacenar la ruta del archivo de configuración para la base de datos
+
+// Variables de configuración para el módulo de impresión.
+char ImpresoraConfig[256], TicketImpresion[256], TicketArriba[256], TicketArribaServicioDomicilio[256], TicketAbajoServicioDomicilio[256];
+char TicketAbajo[256], TicketAbajoCredito[256], TicketAbajoContado[256], AbrirCajon[256], TicketLogo[256], TicketReimpresion[256];
+char FacturaConfig[256], CobranzaConfig[256]; // Funciones en desuso.
+
+
+char factura_electronica[256];  // Comando para generar el CFD
+
 //////Funciones Eder////////
 #include "dialogos2.h" //Libreria para mensajes
 #include "dialogos.h" //Libreria para mensajes
@@ -96,7 +107,7 @@ on_busca_cliente_activate_lista        (GtkWidget        *widget,
 
 	criterio = gtk_editable_get_chars(GTK_EDITABLE(busca_cliente), 0, -1);
 	
-	sprintf(sqlcliente, "SELECT Cliente.id_cliente, Cliente.nombre, Lista.nombre FROM Cliente INNER JOIN Lista ON Cliente.id_lista = Lista.id_lista WHERE Cliente.nombre LIKE \"%%%s%%\" OR Cliente.id_cliente=\"%s\"", criterio, criterio);
+	sprintf(sqlcliente, "SELECT c.id_cliente, c.nombre, l.nombre FROM Cliente c INNER JOIN Lista l ON c.id_lista = l.id_lista WHERE c.nombre LIKE \"%%%s%%\" OR c.id_cliente=\"%s\" LIMIT 100", criterio, criterio);
 	printf ("SQL = %s\n",sqlcliente);
 
 	if(conecta_bd() == -1)
@@ -134,7 +145,7 @@ on_busca_producto_activate_lista       (GtkWidget        *widget,
 {
 	GtkWidget *busca_producto = lookup_widget(widget, "busca_producto");
 	GtkWidget *Lista_precios = lookup_widget(widget, "Lista_precios");
-	char sqlarticulo[900];
+	char sqlarticulo[1000];
 	gchar *lista[5];
 	gchar *criterio;
 
@@ -145,7 +156,7 @@ on_busca_producto_activate_lista       (GtkWidget        *widget,
 
 	criterio = gtk_editable_get_chars(GTK_EDITABLE(busca_producto),0,-1);
 
-	sprintf(sqlarticulo, "SELECT Articulo.id_articulo, Articulo.nombre, Articulo_Lista.precio, Articulo_Lista.precio_minimo, Tarjeta_Cliente.descuento, CONCAT(Subproducto.codigo,Articulo.codigo) FROM Articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto INNER JOIN Articulo_Lista ON Articulo.id_articulo = Articulo_Lista.id_articulo INNER JOIN Lista ON Articulo_Lista.id_lista = Lista.id_lista INNER JOIN Cliente ON Lista.id_lista = Cliente.id_lista LEFT JOIN Tarjeta_Cliente ON Cliente.id_cliente = Tarjeta_Cliente.id_cliente AND Tarjeta_Cliente.id_articulo = Articulo.id_articulo WHERE (Articulo.nombre LIKE \"%%%s%%\" OR Subproducto.codigo=\"%s\") AND Cliente.id_cliente=\"%s\"", criterio, criterio, id_cliente_descuento);
+	sprintf(sqlarticulo, "SELECT Articulo.id_articulo, Articulo.nombre, Articulo_Lista.precio, Articulo_Lista.precio_minimo, Tarjeta_Cliente.descuento, CONCAT(Subproducto.codigo,Articulo.codigo) FROM Articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto INNER JOIN Articulo_Lista ON Articulo.id_articulo = Articulo_Lista.id_articulo INNER JOIN Lista ON Articulo_Lista.id_lista = Lista.id_lista INNER JOIN Cliente ON Lista.id_lista = Cliente.id_lista LEFT JOIN Tarjeta_Cliente ON Cliente.id_cliente = Tarjeta_Cliente.id_cliente AND Tarjeta_Cliente.id_articulo = Articulo.id_articulo WHERE (Articulo.nombre LIKE \"%%%s%%\" OR Subproducto.codigo=\"%s\") AND Cliente.id_cliente=\"%s\" LIMIT 30", criterio, criterio, id_cliente_descuento);
 	
 	printf ("###############################\n %s \n######################\n",sqlarticulo);
 
@@ -2597,7 +2608,7 @@ on_txttelefono_activate                (GtkCList        *listaclientes,
 
 	criterio = gtk_editable_get_chars(GTK_EDITABLE(txttelefono),0,-1);
 
-	sprintf(sqlclientes, "SELECT id_cliente, nombre FROM Cliente WHERE Cliente.bloqueado='n' AND (telefono = '%s' OR telefono2 = '%s' OR telefono3 = '%s')", criterio, criterio, criterio);
+	sprintf(sqlclientes, "SELECT id_cliente, nombre FROM Cliente c WHERE c.bloqueado='n' AND (telefono = '%s' OR telefono2 = '%s' OR telefono3 = '%s') LIMIT 100", criterio, criterio, criterio);
 
 	//strcat(sqlclientes, criterio);
 
@@ -3784,7 +3795,7 @@ on_txtbuscarcliente_activate           (GtkCList        *listaclientes,
 	GtkEntry *txtbuscarcliente = user_data;
 
 	criterio = gtk_editable_get_chars(GTK_EDITABLE(txtbuscarcliente),0,-1);
-	sprintf(sqlclientes, "SELECT id_cliente, nombre FROM Cliente WHERE Cliente.bloqueado='n' AND (nombre LIKE '%%%s%%' OR contacto LIKE '%%%s%%' OR id_cliente=\"%s\") ORDER BY id_cliente", criterio, criterio, criterio);
+	sprintf(sqlclientes, "SELECT id_cliente, nombre FROM Cliente WHERE bloqueado='n' AND (nombre LIKE '%%%s%%' OR contacto LIKE '%%%s%%' OR id_cliente=\"%s\") ORDER BY id_cliente LIMIT 100", criterio, criterio, criterio);
 
 	gtk_clist_clear(listaclientes);
 
@@ -3838,7 +3849,7 @@ on_caja_show                           (GtkCList       *listaclientes,
 	GtkWidget *label1298;  //IVA
 	GtkWidget *menu_item_articulos;  //Menú Artículos
 
-	char sqlclientes[200] = "SELECT id_cliente, nombre FROM Cliente WHERE bloqueado = 'n' ORDER BY id_cliente";
+	char sqlclientes[200] = "SELECT id_cliente, nombre FROM Cliente WHERE bloqueado = 'n' ORDER BY id_cliente LIMIT 100";
 	char sqlconfigiva[70] = "SELECT CONCAT(FORMAT(iva*100,0),\'%\'), iva FROM Configuracion LIMIT 1";
 	gchar *lista[2];
 	gchar *ip;
@@ -4621,6 +4632,42 @@ on_btnloginok_activate_ok              (GtkWindow       *Inicio_Sesion,
 	int val = 0;
 	int ok = 0;
 
+        homedir = getenv("HOME");
+        strcpy(file_db_config, homedir);
+        strcat(file_db_config, "/.carnesbecerra/configuracionbd.dat");
+        
+        /*
+         * Se inicializan las variables de configuración para impresiones
+         */
+        strcpy(ImpresoraConfig, homedir);
+        strcat(ImpresoraConfig, "/.carnesbecerra/impresoras.conf");
+        strcpy(TicketImpresion, homedir);
+        strcat(TicketImpresion, "/.carnesbecerra/impresion/impresiones-tmp.txt");
+        strcpy(TicketArriba, homedir);
+        strcat(TicketArriba, "/.carnesbecerra/impresion/ticket-arriba.txt");
+        strcpy(TicketArribaServicioDomicilio, homedir);
+        strcat(TicketArribaServicioDomicilio, "/.carnesbecerra/impresion/ticket-servicio_domicilio_arriba.txt");
+        strcpy(TicketAbajoServicioDomicilio, homedir);
+        strcat(TicketAbajoServicioDomicilio, "/.carnesbecerra/impresion/ticket-servicio_domicilio_abajo.txt");
+        strcpy(TicketAbajoCredito, homedir);
+        strcat(TicketAbajoCredito, "/.carnesbecerra/impresion/ticket-abajo-credito.txt");
+        strcpy(TicketAbajoContado, homedir);
+        strcat(TicketAbajoContado, "/.carnesbecerra/impresion/ticket-abajo-contado.txt");
+        strcpy(AbrirCajon, homedir);
+        strcat(AbrirCajon, "/.carnesbecerra/impresion/abrircajon.txt");
+        strcpy(TicketLogo, homedir);
+        strcat(TicketLogo, "/.carnesbecerra/impresion/logo.epson");
+        strcpy(TicketReimpresion, homedir);
+        strcat(TicketReimpresion, "/.carnesbecerra/impresion/reimpresion.epson");
+                
+        /*
+         * Configuración para los CFDs
+         */
+        strcpy(factura_electronica, homedir);
+        //sprintf(factura_electronica,"~/cfd/factura_electronica.php %s normal", folio);
+        strcat(factura_electronica, "/.carnesbecerra/cfd/factura_electronica.php");
+        
+        printf("El home...= %s \n",homedir);
 	printf("··········· 3  \n");
 
 	caja = create_caja();
@@ -5087,7 +5134,7 @@ on_btnbdaceptar_clicked                (GtkWindow       *Configuracion_BD,
 	int sepudo,er;
 	char sqlcaja[100];
 
-	if((fconfiguracionbd = fopen("configuracionbd.dat","w")))
+	if((fconfiguracionbd = fopen(file_db_config,"w")))
 	{
 /*		if(chdir("~/") == -1)
 			printf("Error al cambiar de directorio...%s\n", strerror(errno));*/
@@ -5164,7 +5211,7 @@ int conecta_bd()
 	char bd[50]="";
 	int puerto=3306;
 
-	if((fconfiguracionbd = fopen("configuracionbd.dat","r")))
+	if((fconfiguracionbd = fopen(file_db_config,"r")))
 	{
 		while(!feof(fconfiguracionbd))
 		{
@@ -5227,7 +5274,7 @@ on_Configuracion_BD_show_ip            (GtkEntry       *entry_IP,
 	int i=0;
 	int j=0;
 
-	if((fconfiguracionbd = fopen("configuracionbd.dat","r")))
+	if((fconfiguracionbd = fopen(file_db_config,"r")))
 	{
 		while(!feof(fconfiguracionbd))
 		{
@@ -5342,7 +5389,7 @@ int Obtiene_caja()
 	int i=0;
 	int j=0;
 
-	if((fconfiguracionbd = fopen("configuracionbd.dat","r")))
+	if((fconfiguracionbd = fopen(file_db_config,"r")))
 	{
 		while(!feof(fconfiguracionbd))
 		{
@@ -5631,8 +5678,6 @@ on_btnconfirmaraceptar_clicked         (GtkButton       *button,
 	gchar *gid_concepto, *gtipo_salida;
 	char id_concepto[10], tipo_salida[8];
 	char tipoPago[20], referenciaPago[20]="", cuentaPago[20]="No identificado";
-
-	char factura_electronica[40];
 	
 	float totalVentaComision=0;
 	float subtotalVentaComision=0;
@@ -6535,7 +6580,6 @@ on_btnfacturarok_clicked_ok            (GtkButton       *button,
 	char sqlemail[160];
 	char sqlrfc[100];
 	char fecha[11], hora[10];
-	char factura_electronica[50];
 	
 	//Variables para los CFDs
 	char sqlcfd[200];
@@ -6675,7 +6719,7 @@ on_btnfacturarok_clicked_ok            (GtkButton       *button,
 					{*/	
 						/****** FUNCION PARA GENERAR LA FACTURA ELECTRONICA *******/
 						printf("Antes de guardar la cadena de la factura\n");
-						sprintf(factura_electronica,"~/cfd/factura_electronica.php %s normal", folio);
+						sprintf(factura_electronica,"%s %s normal", factura_electronica, folio);
 						printf("Antes de la factura\n");
 						system(factura_electronica);
 						sprintf(sqlcfd,"SELECT id_factura FROM Venta WHERE id_venta = %s",folio);
@@ -8115,7 +8159,7 @@ void buscar_articulo()
 	GtkWidget *clist_clientes;
 	GtkWidget *chk_precio;
 	
-	char sqlarticulo[720];
+	char sqlarticulo[730];
 	gchar *articulo;
 	gchar *lista[4];
 	gchar *id_cliente;
@@ -8133,9 +8177,9 @@ void buscar_articulo()
 	articulo = gtk_editable_get_chars(GTK_EDITABLE(entry_buscararticulonombre), 0, -1);
 	
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(chk_precio)))
-		sprintf(sqlarticulo, "SELECT CONCAT(Subproducto.codigo,Articulo.codigo), Articulo.nombre, Articulo_Lista.precio, Articulo.tipo, Tarjeta_Cliente.descuento FROM Articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto INNER JOIN Articulo_Lista ON Articulo_Lista.id_articulo = Articulo.id_articulo INNER JOIN Cliente ON Cliente.id_lista = Articulo_Lista.id_lista LEFT JOIN Tarjeta_Cliente ON Tarjeta_Cliente.id_cliente = Cliente.id_cliente AND Tarjeta_Cliente.id_articulo = Articulo_Lista.id_articulo  WHERE Articulo.nombre LIKE \"%%%s%%\" AND Cliente.id_cliente = %s AND Articulo.codigo IS NOT NULL AND Subproducto.codigo IS NOT NULL", articulo,id_cliente);
+		sprintf(sqlarticulo, "SELECT CONCAT(Subproducto.codigo,Articulo.codigo), Articulo.nombre, Articulo_Lista.precio, Articulo.tipo, Tarjeta_Cliente.descuento FROM Articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto INNER JOIN Articulo_Lista ON Articulo_Lista.id_articulo = Articulo.id_articulo INNER JOIN Cliente ON Cliente.id_lista = Articulo_Lista.id_lista LEFT JOIN Tarjeta_Cliente ON Tarjeta_Cliente.id_cliente = Cliente.id_cliente AND Tarjeta_Cliente.id_articulo = Articulo_Lista.id_articulo  WHERE Articulo.nombre LIKE \"%%%s%%\" AND Cliente.id_cliente = %s AND Articulo.codigo IS NOT NULL AND Subproducto.codigo IS NOT NULL LIMIT 30", articulo,id_cliente);
 	else
-		sprintf(sqlarticulo, "SELECT CONCAT(Subproducto.codigo,Articulo.codigo), Articulo.nombre, \"-\", Articulo.tipo FROM Articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto WHERE Articulo.nombre LIKE \"%%%s%%\" AND Articulo.codigo IS NOT NULL AND Subproducto.codigo IS NOT NULL", articulo);
+		sprintf(sqlarticulo, "SELECT CONCAT(Subproducto.codigo,Articulo.codigo), Articulo.nombre, \"-\", Articulo.tipo FROM Articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto WHERE Articulo.nombre LIKE \"%%%s%%\" AND Articulo.codigo IS NOT NULL AND Subproducto.codigo IS NOT NULL LIMIT 30", articulo);
 	
 	printf ("\n\n%s\n\n",sqlarticulo);
 	
@@ -8309,9 +8353,9 @@ void buscar_cliente(int tipo)
 	cliente = gtk_editable_get_chars(GTK_EDITABLE(entry_buscarclientenombre), 0, -1);
 
 	if(tipo == 0)
-		sprintf(sqlcliente, "SELECT id_cliente, nombre, telefono FROM Cliente WHERE Cliente.bloqueado='n' AND (nombre LIKE \"%%%s%%\" OR contacto LIKE \"%%%s%%\" OR telefono='%s' OR telefono2='%s' OR telefono3='%s')", cliente, cliente, cliente, cliente, cliente);
+		sprintf(sqlcliente, "SELECT id_cliente, nombre, telefono FROM Cliente WHERE Cliente.bloqueado='n' AND (nombre LIKE \"%%%s%%\" OR contacto LIKE \"%%%s%%\" OR telefono='%s' OR telefono2='%s' OR telefono3='%s') LIMIT 100", cliente, cliente, cliente, cliente, cliente);
 	else if(tipo == 1)
-		sprintf(sqlcliente, "SELECT id_cliente, nombre, telefono FROM Cliente WHERE Cliente.id_cliente > 1 AND Cliente.bloqueado='n' AND (nombre LIKE \"%%%s%%\" OR contacto LIKE \"%%%s%%\" OR telefono='%s' OR telefono2='%s' OR telefono3='%s')", cliente, cliente, cliente, cliente, cliente);
+		sprintf(sqlcliente, "SELECT id_cliente, nombre, telefono FROM Cliente WHERE Cliente.id_cliente > 1 AND Cliente.bloqueado='n' AND (nombre LIKE \"%%%s%%\" OR contacto LIKE \"%%%s%%\" OR telefono='%s' OR telefono2='%s' OR telefono3='%s') LIMIT 100", cliente, cliente, cliente, cliente, cliente);
 
 	gtk_clist_clear(GTK_CLIST(clist_buscarcliente));
 	if(conecta_bd() == 1)
@@ -8592,7 +8636,7 @@ on_clist_linea_select_row              (GtkCList        *clist_ListadoDeArticulo
 	char id_linea[5];
 	gchar *pid_linea;
 	GtkCList *clist_linea=user_data;
-	char sqllarticulos[300];
+	char sqllarticulos[310];
 
 	pid_linea = id_linea;
 
@@ -8604,7 +8648,7 @@ on_clist_linea_select_row              (GtkCList        *clist_ListadoDeArticulo
 
 	
 
-	sprintf(sqllarticulos, "SELECT id_articulo, codigo, nombre, tipo FROM Articulo WHERE id_linea = %s AND (nombre LIKE '%%%s%%' OR codigo LIKE '%s%%') ORDER BY codigo", id_linea_articulo, criterio_articulo, criterio_articulo);
+	sprintf(sqllarticulos, "SELECT id_articulo, codigo, nombre, tipo FROM Articulo WHERE id_linea = %s AND (nombre LIKE '%%%s%%' OR codigo LIKE '%s%%') ORDER BY codigo LIMIT 30", id_linea_articulo, criterio_articulo, criterio_articulo);
 
 	busquedas(sqllarticulos, clist_ListadoDeArticulos);
 }
@@ -8637,7 +8681,7 @@ on_Ventana_Articulos_show              (GtkCList       *listaArticulos,
                                         gpointer         user_data)
 {
 	gtk_clist_set_column_visibility (listaArticulos,0,FALSE);
-	busquedas ("SELECT id_articulo, codigo, nombre, tipo FROM Articulo ORDER BY codigo",listaArticulos);
+	busquedas ("SELECT id_articulo, codigo, nombre, tipo FROM Articulo ORDER BY codigo LIMIT 30",listaArticulos);
 }
 
 
@@ -9821,7 +9865,7 @@ on_entry_codigo_activate_actualiza_lista
 	GtkWidget *widget;
 	GtkWidget *entry_cantidad;
 
-	char sql[700];
+	char sql[710];
 	int i,bandera;
 	int row_total;//Numero total de row
 	gchar *observacion_actual;
@@ -9856,7 +9900,7 @@ on_entry_codigo_activate_actualiza_lista
 	printf("\n---->> %s",articulo.codigo);
 
 
-	sprintf(sql,"SELECT Articulo.nombre, ROUND(Articulo_Lista.precio,2), ROUND(Tarjeta_Cliente.descuento,2), Articulo.tipo, Articulo.id_articulo, Articulo_Lista.precio_minimo, Articulo.porcentaje_iva FROM Articulo_Lista INNER JOIN Articulo ON Articulo_Lista.id_articulo = Articulo.id_articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto INNER JOIN Lista ON Articulo_Lista.id_lista = Lista.id_lista INNER JOIN Cliente ON Lista.id_lista = Cliente.id_lista LEFT JOIN Tarjeta_Cliente ON Tarjeta_Cliente.id_cliente = Cliente.id_cliente AND Tarjeta_Cliente.id_articulo = Articulo.id_articulo WHERE Articulo.codigo = '%s' AND Subproducto.codigo = '%s' AND Cliente.id_cliente = %s", articulo.codigo, articulo.codigo_subproducto, codigo_cliente);
+	sprintf(sql,"SELECT Articulo.nombre, ROUND(Articulo_Lista.precio,2), ROUND(Tarjeta_Cliente.descuento,2), Articulo.tipo, Articulo.id_articulo, Articulo_Lista.precio_minimo, Articulo.porcentaje_iva FROM Articulo_Lista INNER JOIN Articulo ON Articulo_Lista.id_articulo = Articulo.id_articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto INNER JOIN Lista ON Articulo_Lista.id_lista = Lista.id_lista INNER JOIN Cliente ON Lista.id_lista = Cliente.id_lista LEFT JOIN Tarjeta_Cliente ON Tarjeta_Cliente.id_cliente = Cliente.id_cliente AND Tarjeta_Cliente.id_articulo = Articulo.id_articulo WHERE Articulo.codigo = '%s' AND Subproducto.codigo = '%s' AND Cliente.id_cliente = %s LIMIT 30", articulo.codigo, articulo.codigo_subproducto, codigo_cliente);
 	//sprintf(sql,"SELECT Articulo.nombre, ROUND(Articulo_Lista.precio,2), ROUND(Tarjeta_Cliente.descuento,2), Articulo.tipo, Articulo.id_articulo, Articulo_Lista.precio_minimo FROM Articulo_Lista INNER JOIN Articulo ON Articulo_Lista.id_articulo = Articulo.id_articulo INNER JOIN Lista ON Articulo_Lista.id_lista = Lista.id_lista INNER JOIN Cliente ON Lista.id_lista = Cliente.id_lista LEFT JOIN Tarjeta_Cliente ON Tarjeta_Cliente.id_cliente = Cliente.id_cliente AND Tarjeta_Cliente.id_articulo = Articulo.id_articulo WHERE Articulo.codigo = %s AND Cliente.id_cliente = %s", articulo.codigo, codigo_cliente);
 
 /******************************************************************************************************************************************************
@@ -14413,7 +14457,7 @@ on_btn_buscar_articulo_clicked         (GtkButton       *button,
 	gchar *id_articulo_paquete;
 	int er;
 	int nRow;
-	char sqlArticulos[500];
+	char sqlArticulos[510];
 	
 	clist_articulos_sin_paquete = lookup_widget(GTK_WIDGET(button),"clist_articulos_sin_paquete");
 	entry_buscar_articulo       = lookup_widget(GTK_WIDGET(button),"entry_buscar_articulo"      );
@@ -14429,7 +14473,7 @@ on_btn_buscar_articulo_clicked         (GtkButton       *button,
 		
 		gtk_entry_set_text (GTK_ENTRY(entry_buscar_articulo), "");
 		
-		sprintf(sqlArticulos," SELECT Articulo.id_articulo, Articulo.nombre FROM Articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto LEFT JOIN Paquete_Articulo ON Paquete_Articulo.id_articulo_paquete = Articulo.id_articulo WHERE Articulo.nombre LIKE '%%%s%%' AND (Paquete_Articulo.id_articulo_paquete  IS NULL)  AND (Paquete_Articulo.id_articulo IS NULL OR Paquete_Articulo.id_articulo = '%s') ORDER BY Articulo.nombre ",articuloNombre, id_articulo_paquete);
+		sprintf(sqlArticulos," SELECT Articulo.id_articulo, Articulo.nombre FROM Articulo INNER JOIN Subproducto ON Articulo.id_subproducto = Subproducto.id_subproducto LEFT JOIN Paquete_Articulo ON Paquete_Articulo.id_articulo_paquete = Articulo.id_articulo WHERE Articulo.nombre LIKE '%%%s%%' AND (Paquete_Articulo.id_articulo_paquete  IS NULL)  AND (Paquete_Articulo.id_articulo IS NULL OR Paquete_Articulo.id_articulo = '%s') ORDER BY Articulo.nombre LIMIT 30",articuloNombre, id_articulo_paquete);
 		//printf ("\n Articulos: %s \n\n", sqlArticulos);
 		
 		gtk_clist_clear(GTK_CLIST(clist_articulos_sin_paquete));
