@@ -66,6 +66,7 @@ char FacturaConfig[256], CobranzaConfig[256]; // Funciones en desuso.
 
 
 char factura_electronica[256];  // Comando para generar el CFD
+char comando_factura[256];   // Comando para generar el CFD con parámetros
 
 //////Funciones Eder////////
 #include "dialogos2.h" //Libreria para mensajes
@@ -6719,9 +6720,9 @@ on_btnfacturarok_clicked_ok            (GtkButton       *button,
 					{*/	
 						/****** FUNCION PARA GENERAR LA FACTURA ELECTRONICA *******/
 						printf("Antes de guardar la cadena de la factura\n");
-						sprintf(factura_electronica,"%s %s normal", factura_electronica, folio);
+						sprintf(comando_factura,"%s %s normal", factura_electronica, folio);
 						printf("Antes de la factura\n");
-						system(factura_electronica);
+						system(comando_factura);
 						sprintf(sqlcfd,"SELECT id_factura FROM Venta WHERE id_venta = %s",folio);
 						printf("El SQL para comprobar si se facturó: %s\n",sqlcfd);
 						er = mysql_query(&mysql2, sqlcfd);
@@ -7799,7 +7800,6 @@ on_btn_cierre_facturar_clicked         (GtkButton       *button,
 	//Variables para los CFDs
 	char sqlcfd[200];
 	char id_cfd[10];
-	char factura_electronica[60];
 
 	clist_cierre_venta = lookup_widget(GTK_WIDGET(Cierre_facturas), "clist_cierre_venta");
 	entry_dedia = lookup_widget(GTK_WIDGET(Cierre_facturas), "entry_cierre_dedia");
@@ -7836,9 +7836,9 @@ on_btn_cierre_facturar_clicked         (GtkButton       *button,
 		{
 			/****** FUNCION PARA GENERAR LA FACTURA ELECTRONICA *******/
 			printf("Antes de guardar la cadena de la factura\n");
-			sprintf(factura_electronica,"~/cfd/factura_electronica.php 1 cierre %s%s%s %s%s%s",deano, demes, dedia, hastaano, hastames, hastadia);
+			sprintf(comando_factura,"%s 1 cierre %s%s%s %s%s%s",factura_electronica, deano, demes, dedia, hastaano, hastames, hastadia);
 			printf("Antes de la factura\n");
-			system(factura_electronica);
+			system(comando_factura);
 			sprintf(sqlcfd,"SELECT id_factura FROM factura WHERE rRfc = 'XAXX010101000' ORDER BY id_factura DESC LIMIT 2");
 			printf("El sql para sacar las facturas: %s\n", sqlcfd);
 			er = mysql_query(&mysql2, sqlcfd);

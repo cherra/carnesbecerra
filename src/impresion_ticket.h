@@ -915,8 +915,8 @@ int imprimirticket(char *id_venta_char, char tipo[20], double pago_num, ...){
 	char temp3[40] = "                                        ";
 	char sql[1500], sql_articulos[1500], monto[14], subtotalVenta[14], iva15Venta[12], listaNombre[20], nombreEmpleado[20]; 
 	char id_venta[20], cambio[12], kilos_bascula[10], pago[14], num_articulos[300], peso[300], pieza[300], totales[20], total_cierre_listado[40];
-	char fechaTMP[10]; //Variable Temporal para separar las fechas
-	char fecha_pagare[10];
+	char fechaTMP[11]; //Variable Temporal para separar las fechas
+	char fecha_pagare[11];
 	char vendedor[80];
 	char cajero[200];
 	char fechaCorte[200];

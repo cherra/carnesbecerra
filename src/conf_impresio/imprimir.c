@@ -62,7 +62,7 @@ char *consulta = "default"; //Nombre de la impresora
 int manda_imprimir(char nombrearchivo[50], char *consulta){
 //char nombrearchivo[50] = "prueba.txt"; //Nombre del archivo
 //char *consulta = "default"; //Nombre de la impresora
-char impresora[100];
+char impresora[300];
 
 //char ImpresoraConfig[] = "impresion_conf/impresoras.conf.txt"; //Nombre del archivo de configuracion
 char c[1000]; //Aqui se guarda las cadenas a imprimir
