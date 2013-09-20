@@ -18,7 +18,7 @@ GtkWidget* create_dialog_Confirma(void);
 
 
 //Variable global para poner los mensajes en el label de cada ventana de dialogo
-char mensaje[200];
+char mensaje[512];
 
 
 //////////////////////////////////Funcioes  para mensajes de informacion
