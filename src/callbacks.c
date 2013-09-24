@@ -61,7 +61,7 @@ char file_db_config[128];  // Variable para almacenar la ruta del archivo de con
 
 // Variables de configuración para el módulo de impresión.
 char ImpresoraConfig[256], TicketImpresion[256], TicketArriba[256], TicketArribaServicioDomicilio[256], TicketAbajoServicioDomicilio[256];
-char TicketAbajo[256], TicketAbajoCredito[256], TicketAbajoContado[256], AbrirCajon[256], TicketLogo[256], TicketReimpresion[256];
+char TicketAbajo[256], TicketAbajoCredito[256], TicketAbajoContado[256], AbrirCajon[256], TicketLogo[256], TicketReimpresion[256], TicketServicios[256];
 char FacturaConfig[256], CobranzaConfig[256]; // Funciones en desuso.
 
 
@@ -4654,6 +4654,8 @@ on_btnloginok_activate_ok              (GtkWindow       *Inicio_Sesion,
         strcat(TicketAbajoCredito, "/.carnesbecerra/impresion/ticket-abajo-credito.txt");
         strcpy(TicketAbajoContado, homedir);
         strcat(TicketAbajoContado, "/.carnesbecerra/impresion/ticket-abajo-contado.txt");
+        strcpy(TicketServicios, homedir);
+        strcat(TicketServicios, "/.carnesbecerra/impresion/servicios.txt");
         strcpy(AbrirCajon, homedir);
         strcat(AbrirCajon, "/.carnesbecerra/impresion/abrircajon.txt");
         strcpy(TicketLogo, homedir);
@@ -12073,7 +12075,7 @@ on_btnAceptar_Servicios_clicked        (GtkButton       *button,
    			}
 			else
 			{
-				fpt = fopen("impresion/servicios.txt","w+");
+				fpt = fopen(TicketServicios,"w+");
 			
 				//se crea el encabezado de la impresion
 				sacarfecha (fecha,hora);
@@ -12180,10 +12182,10 @@ on_btnAceptar_Servicios_clicked        (GtkButton       *button,
 				
 				mysql_close(&mysql);
 				
-				imprimirticket("", "archivo", 0.0,"impresion/servicios.txt");
+				imprimirticket("", "archivo", 0.0,TicketServicios);
 				
 				if (dobleImpresion)
-					imprimirticket("", "archivo", 0.0,"impresion/servicios.txt");
+					imprimirticket("", "archivo", 0.0,TicketServicios);
 				
 			}
 		}
