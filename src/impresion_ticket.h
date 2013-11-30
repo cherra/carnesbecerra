@@ -961,7 +961,7 @@ int imprimirticket(char *id_venta_char, char tipo[20], double pago_num, ...){
 	float num_numero = 0;
 	char cad_temporal[255];
 	int logoc;
-	char cad_temporal_fechas[1];
+	char cad_temporal_fechas[2];
 
 	//Corte Caja
 	float corte_contado_num = 0;
