@@ -124,7 +124,8 @@ int timbra_cfdi( char *folio ){
             return 1;
     }
     
-    sprintf(json, "{'bd':'%s','username':'%s','password':'%s','folio':'%s'}\0", bd, usuario, contrasena, folio);
+    sprintf(json, "{\"bd\":\"%s\",\"username\":\"%s\",\"password\":\"%s\",\"folio\":\"%s\"}\0", bd, usuario, contrasena, folio);
+    printf("Cadena JSON a enviar al servidor: %s\n",json);
     write(sockfd, &json, strlen(json));
     while ( (n = read(sockfd, &respuesta, sizeof(respuesta)-1)) > 0)
     {
