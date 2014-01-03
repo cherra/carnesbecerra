@@ -73,6 +73,7 @@ char comando_factura[256];   // Comando para generar el CFD con parámetros
 #include "dialogos.h" //Libreria para mensajes
 #include "funciones.h"
 #include "impresion_ticket.h"
+#include "cfdi.c"
 
 
 int puerto_serie=2;
@@ -3851,7 +3852,7 @@ on_caja_show                           (GtkCList       *listaclientes,
 	GtkWidget *menu_item_articulos;  //Menú Artículos
 
 	char sqlclientes[200] = "SELECT id_cliente, nombre FROM Cliente WHERE bloqueado = 'n' ORDER BY id_cliente LIMIT 100";
-	char sqlconfigiva[70] = "SELECT CONCAT(FORMAT(iva*100,0),\'%\'), iva FROM Configuracion LIMIT 1";
+	char sqlconfigiva[100] = "SELECT CONCAT(FORMAT(valor*100,0),\'%\'), valor FROM Configuracion WHERE clave = 'iva'LIMIT 1";
 	gchar *lista[2];
 	gchar *ip;
 	int er,i;
@@ -4621,7 +4622,7 @@ on_btnloginok_activate_ok              (GtkWindow       *Inicio_Sesion,
 	GtkWidget *radio_ticket;
 	
 	
-	char sqlTarjeta[] = "SELECT comision_tarjeta, comision_cheque FROM Configuracion ";
+	char sqlTarjeta[] = "SELECT (SELECT valor FROM Configuracion WHERE clave = 'comision_tarjeta'), (SELECT valor FROM Configuracion WHERE clave = 'comision_cheque')";
 	char sqlcomprobar[200] = "SELECT id_usuario, nombre, tipo FROM Usuario WHERE eliminado='n' AND username='";
 	char sqlyainiciada[100] = "SELECT id_caja FROM Sesion WHERE id_usuario = ";
 	char sqlsesion[100];
@@ -6572,6 +6573,7 @@ on_btnfacturarok_clicked_ok            (GtkButton       *button,
 	GtkWidget *entry_facturarcliente;
 	GtkWidget *entry_emailFactura;
 	GtkWidget *textview_Observaciones;
+        GtkWidget *win_trabajando;
 	GtkTextBuffer *buff;
 	GtkTextIter start, end;
 	char sqlfactura[300];
@@ -6721,10 +6723,15 @@ on_btnfacturarok_clicked_ok            (GtkButton       *button,
 					if(er == 0)
 					{*/	
 						/****** FUNCION PARA GENERAR LA FACTURA ELECTRONICA *******/
+                                                win_trabajando = create_win_trabajando ();
 						printf("Antes de guardar la cadena de la factura\n");
-						sprintf(comando_factura,"%s %s normal", factura_electronica, folio);
+						//sprintf(comando_factura,"%s %s normal", factura_electronica, folio);
 						printf("Antes de la factura\n");
-						system(comando_factura);
+                                                if(timbra_cfdi(folio) == 0){
+                                                    Err_Info("Ocurrió un error al timbrar el comprobante fiscal!");
+                                                }
+                                                gtk_widget_destroy(win_trabajando);
+						//system(comando_factura);
 						sprintf(sqlcfd,"SELECT id_factura FROM Venta WHERE id_venta = %s",folio);
 						printf("El SQL para comprobar si se facturó: %s\n",sqlcfd);
 						er = mysql_query(&mysql2, sqlcfd);

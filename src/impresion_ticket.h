@@ -913,7 +913,7 @@ int imprimirticket(char *id_venta_char, char tipo[20], double pago_num, ...){
 	char temp[9] = "         ";
 	char temp2[30] = "                              ";
 	char temp3[40] = "                                        ";
-	char sql[1500], sql_articulos[1500], monto[14], subtotalVenta[14], iva15Venta[12], listaNombre[20], nombreEmpleado[20]; 
+	char sql[2000], sql_articulos[1500], monto[14], subtotalVenta[14], iva15Venta[12], listaNombre[20], nombreEmpleado[20]; 
 	char id_venta[20], cambio[12], kilos_bascula[10], pago[14], num_articulos[300], peso[300], pieza[300], totales[20], total_cierre_listado[40];
 	char fechaTMP[11]; //Variable Temporal para separar las fechas
 	char fecha_pagare[11];
@@ -923,6 +923,7 @@ int imprimirticket(char *id_venta_char, char tipo[20], double pago_num, ...){
 	char cajaCorte[200];
 	char *archivoImpresion;
 	char codigo_barras[18], codigo_barras_num[30];
+        float version_factura = 0.0;
 
 	char cadconf[5];
 	int err; //Variable de error de la consulta SQL
@@ -1905,7 +1906,7 @@ FORMAT(Articulo.porcentaje_iva * 100,2)
 			imprimir(alinea_i,nX);
 
 			//sprintf(sql, "SELECT Venta.id_venta, DATE_FORMAT(Venta.fecha,\"%%d-%%m-%%Y\"), FORMAT(ROUND(Venta.monto,2),2), Venta_Factura_Relacion.id_venta, Venta.monto FROM Venta INNER JOIN Venta_Factura_Relacion ON Venta.id_venta = Venta_Factura_Relacion.id_venta WHERE Venta_Factura_Relacion.num_factura = %s AND Venta.cancelada = 'n' ORDER BY Venta.id_venta", id_venta);
-				sprintf(sql,"SELECT factura.eRfc, factura.eCurp, factura.eNombre, factura.eCalle, factura.eNoexterior, factura.eNointerior, factura.eColonia, factura.eMunicipio, factura.eEstado, factura.ePais, factura.eCp, factura.rRfc, factura.rNombre, factura.rCalle,factura. rNoexterior, factura.rNointerior, factura.rColonia, factura.rMunicipio, factura.rEstado, factura.rPais, factura.rCp, DATE_FORMAT(factura.fecha, '%%d-%%m-%%Y') AS fecha, DATE_FORMAT(factura.fecha, '%%H:%%i:%%s') AS hora, factura.descuento, FORMAT(factura.subtotal,2), FORMAT(factura.impuesto,2), FORMAT(factura.total,2), factura.cadenaOriginal, factura.noCertificado, factura.sello, factura.estado, factura_folio.serie, factura_folio.folio, factura_folio.aprobacion, DATE_FORMAT(factura_folio.fecha,'%%Y') AS fechaAprobacion, factura.expCalle, factura.expNoexterior, factura.expNointerior, factura.expColonia, factura.expMunicipio, factura.expEstado, factura.expPais, factura.expCp, factura.observaciones, Venta.id_venta, Cliente.id_cliente, Cliente.cuenta_contable, factura.total, Venta.tipo, DATE_FORMAT(DATE_ADD(Venta.fecha,INTERVAL Cliente.vencimiento DAY),'%%d/%%m/%%Y') AS vencimiento FROM factura INNER JOIN factura_folio ON factura.id_factura_folio = factura_folio.id_factura_folio INNER JOIN Venta ON factura.id_factura = Venta.id_factura INNER JOIN Cliente ON Venta.id_cliente = Cliente.id_cliente WHERE factura.id_factura = '%s'", id_venta) ;
+				sprintf(sql,"SELECT factura.eRfc, factura.eCurp, factura.eNombre, factura.eCalle, factura.eNoexterior, factura.eNointerior, factura.eColonia, factura.eMunicipio, factura.eEstado, factura.ePais, factura.eCp, factura.rRfc, factura.rNombre, factura.rCalle,factura. rNoexterior, factura.rNointerior, factura.rColonia, factura.rMunicipio, factura.rEstado, factura.rPais, factura.rCp, DATE_FORMAT(factura.fecha, '%%d-%%m-%%Y') AS fecha, DATE_FORMAT(factura.fecha, '%%H:%%i:%%s') AS hora, factura.descuento, FORMAT(factura.subtotal,2), FORMAT(factura.impuesto,2), FORMAT(factura.total,2), factura.cadenaOriginal, factura.noCertificado, factura.sello, factura.estado, factura_folio.serie, factura_folio.folio, factura_folio.aprobacion, DATE_FORMAT(factura_folio.fecha,'%%Y') AS fechaAprobacion, factura.expCalle, factura.expNoexterior, factura.expNointerior, factura.expColonia, factura.expMunicipio, factura.expEstado, factura.expPais, factura.expCp, factura.observaciones, Venta.id_venta, Cliente.id_cliente, Cliente.cuenta_contable, factura.total, Venta.tipo, DATE_FORMAT(DATE_ADD(Venta.fecha,INTERVAL Cliente.vencimiento DAY),'%%d/%%m/%%Y') AS vencimiento, factura.selloSAT, factura.noCertificadoSAT, factura.selloCFD, factura.FechaTimbrado, factura.UUID, factura.version, factura.version_interna, factura.cadenaOriginalSAT FROM factura LEFT JOIN factura_folio ON factura.id_factura_folio = factura_folio.id_factura_folio INNER JOIN Venta ON factura.id_factura = Venta.id_factura INNER JOIN Cliente ON Venta.id_cliente = Cliente.id_cliente WHERE factura.id_factura = '%s'", id_venta) ;
 			//sprintf(sql, "SELECT Venta.id_venta, DATE_FORMAT(Venta.fecha,\"%%d-%%m-%%Y\"), FORMAT(ROUND(Venta.monto,2),2), Venta.monto FROM Venta WHERE Venta.num_factura = %s AND Venta.cancelada = 'n' ORDER BY Venta.id_venta", id_venta);
 	        /*
 	        0 = eRfc = 1
@@ -1958,6 +1959,14 @@ FORMAT(Articulo.porcentaje_iva * 100,2)
 		47- Total (sin formato)
 		48- Tipo de venta (credito, contado)
 		49- Fecha de vencimiento
+                50 - Sello SAT
+                51 - No de Certificado SAT
+                52 - Sello CFD SAT
+                53 - Fecha de timbrado
+                54 - UUID
+                55 - version
+                56 - versión interna
+                57 - cadena original del complemento de certificación
 	        */
 			printf("Consulta: %s\n", sql);
 
@@ -1974,6 +1983,20 @@ FORMAT(Articulo.porcentaje_iva * 100,2)
 						imprimir(alinea_i, nX);
 					    if((row=mysql_fetch_row(resultado)))
 						{
+                                                        // Guardamos la versión de la factura
+                                                        version_factura = atof(row[56]);
+                                                        
+                                                        if(strlen(row[50]) == 0){
+                                                            sprintf(c,"COMPROBANTE NO VALIDO PARA EFECTOS FISCALES.\nFAVOR DE INGRESAR AL URL QUE SE INDICA\nEN LA PARTE INFERIOR DE ESTE COMPROBANTE\nPARA DESCARGAR SU FACTURA. ");
+                                                            imprimir(salto,nX);
+                                                            imprimir(negrita,nX);
+                                                            imprimir(c,nX);
+                                                            imprimir(salto,nX);
+                                                            imprimir(salto,nX);
+                                                            imprimir(cancela,nX);
+                                                            imprimir(defecto, nX);
+                                                        }
+                                                        
 							sprintf(c,"EXPEDIDO EN:");
 							imprimir(c,nX);
 							imprimir(salto,nX);
@@ -2178,12 +2201,7 @@ FORMAT(Articulo.porcentaje_iva * 100,2)
 									sprintf(c,"CERTIFICADO DIGITAL: %s",row[28]);
 									imprimir(c,nX);
 									imprimir(salto,nX);
-									sprintf(c,"NUMERO DE APROBACION: %s",row[33]);
-									imprimir(c,nX);
-									imprimir(salto,nX);
-									sprintf(c,"AÑO DE APROBACION: %s",row[34]);
-									imprimir(c,nX);
-									imprimir(salto,nX);
+                                                                        
 									sprintf(c,"Cadena original:");
 									imprimir(negrita,nX);
 									imprimir(c,nX);
@@ -2205,9 +2223,63 @@ FORMAT(Articulo.porcentaje_iva * 100,2)
 									sprintf(c,"---------------------------------------");
 									imprimir(c,nX);
 									imprimir(salto,nX);
-									sprintf(c,"ESTE DOCUMENTO ES UNA REPRESENTACION IMPRESA DE UN CFD");
-									imprimir(c,nX);
-									imprimir(salto,nX);
+                                                                        if( version_factura < 3.2 ){
+                                                                            sprintf(c,"NUMERO DE APROBACION: %s",row[33]);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            sprintf(c,"AÑO DE APROBACION: %s",row[34]);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                        }else if(strlen(row[50]) > 0){
+                                                                            sprintf(c,"FOLIO SAT: %s",row[54]);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            sprintf(c,"Cadena original del complemento de cert.:");
+                                                                            imprimir(negrita,nX);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            imprimir(cancela,nX);
+                                                                            imprimir(defecto, nX);
+                                                                            sprintf(c,"%s",row[57]);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            sprintf(c,"Sello digital SAT:");
+                                                                            imprimir(negrita,nX);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            imprimir(cancela,nX);
+                                                                            imprimir(defecto, nX);
+                                                                            sprintf(c,"%s",row[50]);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            sprintf(c,"CERTIFICADO SAT: %s",row[51]);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            sprintf(c,"FECHA DE TIMBRADO: %s",row[53]);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                        }
+                                                                        if( version_factura < 3.2 ){
+                                                                            sprintf(c,"ESTE DOCUMENTO ES UNA REPRESENTACION IMPRESA DE UN CFD");
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            imprimir(cancela,nX);
+                                                                            imprimir(defecto, nX);
+                                                                        }else{
+                                                                            sprintf(c,"ESTE DOCUMENTO ES UNA REPRESENTACION IMPRESA DE UN CFDI");
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            imprimir(cancela,nX);
+                                                                            imprimir(defecto, nX);
+                                                                            sprintf(c,"PUEDE DESCARGAR SU FACTURA EN: \nhttp://facturacion.carnesbecerra.com.mx/");
+                                                                            imprimir(salto,nX);
+                                                                            imprimir(negrita,nX);
+                                                                            imprimir(c,nX);
+                                                                            imprimir(salto,nX);
+                                                                            imprimir(salto,nX);
+                                                                            imprimir(cancela,nX);
+                                                                            imprimir(defecto, nX);
+                                                                        }
 									imprimir(resetea,nX);
 							}
 						}
@@ -2925,7 +2997,7 @@ FORMAT(Articulo.porcentaje_iva * 100,2)
 				{
 						
 					//Observaciones en el tickets
-					sprintf(sql, "SELECT observacion_ticket FROM Configuracion");
+					sprintf(sql, "SELECT valor FROM Configuracion WHERE clave = 'observacion_ticket'");
 					
 					//printf ("\n############### SQL =%s \n###############\n",sql);
 					err = mysql_query(&mysql, sql);
