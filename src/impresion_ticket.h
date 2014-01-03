@@ -1987,9 +1987,15 @@ FORMAT(Articulo.porcentaje_iva * 100,2)
                                                         version_factura = atof(row[56]);
                                                         
                                                         if(strlen(row[50]) == 0){
-                                                            sprintf(c,"COMPROBANTE NO VALIDO PARA EFECTOS FISCALES.\nFAVOR DE INGRESAR AL URL QUE SE INDICA\nEN LA PARTE INFERIOR DE ESTE COMPROBANTE\nPARA DESCARGAR SU FACTURA. ");
+                                                            sprintf(c,"---------------------------------------");
+                                                            imprimir(c,nX);
                                                             imprimir(salto,nX);
-                                                            imprimir(negrita,nX);
+                                                            sprintf(c,"COMPROBANTE NO VALIDO PARA EFECTOS\nFISCALES. FAVOR DE INGRESAR AL URL QUE\nSE INDICA EN LA PARTE INFERIOR DE ESTE\nCOMPROBANTE PARA DESCARGAR SU FACTURA.");
+                                                            //imprimir(salto,nX);
+                                                            //imprimir(negrita,nX);
+                                                            imprimir(c,nX);
+                                                            imprimir(salto,nX);
+                                                            sprintf(c,"---------------------------------------");
                                                             imprimir(c,nX);
                                                             imprimir(salto,nX);
                                                             imprimir(salto,nX);
@@ -2271,9 +2277,9 @@ FORMAT(Articulo.porcentaje_iva * 100,2)
                                                                             imprimir(salto,nX);
                                                                             imprimir(cancela,nX);
                                                                             imprimir(defecto, nX);
-                                                                            sprintf(c,"PUEDE DESCARGAR SU FACTURA EN: \nhttp://facturacion.carnesbecerra.com.mx/");
+                                                                            sprintf(c,"PUEDE DESCARGAR SU FACTURA EN:\nhttp://facturacion.carnesbecerra.com.mx");
                                                                             imprimir(salto,nX);
-                                                                            imprimir(negrita,nX);
+                                                                            //imprimir(negrita,nX);
                                                                             imprimir(c,nX);
                                                                             imprimir(salto,nX);
                                                                             imprimir(salto,nX);
