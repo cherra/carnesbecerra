@@ -9564,20 +9564,24 @@ void Cancela_Venta()
 								er = mysql_query (&mysql,cad_SQL2);
 								if (er == 0)
 								{
-                                                                    sprintf(cad_SQL2, "SELECT f.id_factura FROM factura f INNER JOIN Venta v ON f.id_venta = v.id_venta WHERE f.id_venta = %s", id_venta);
+                                                                    sprintf(cad_SQL2, "SELECT f.id_factura, f.UUID FROM factura f INNER JOIN Venta v ON f.id_venta = v.id_venta WHERE f.id_venta = %s", id_venta);
                                                                     er = mysql_query(&mysql, cad_SQL2);
                                                                     if(er == 0){
                                                                         if((res2 = mysql_store_result(&mysql))){
-                                                                            while((row = mysql_fetch_row(res2))){
-                                                                                sprintf(cad_SQL2, "UPDATE factura SET estado = '0' WHERE id_venta = %s", id_venta);
+                                                                            while((row2 = mysql_fetch_row(res2))){
+                                                                                sprintf(cad_SQL2, "UPDATE factura SET estado = '0' WHERE id_factura = %s", row2[0]);
                                                                                 er = mysql_query(&mysql,cad_SQL2);
                                                                                 if(er == 0)
                                                                                 {
-                                                                                    if(cancelar_cfdi(row[0]) == 1){
-                                                                                        Info ("Venta cancelada");
-                                                                                        gtk_widget_destroy(GTK_WIDGET (window));
+                                                                                    if(strlen(row2[1]) > 0){
+                                                                                        if(cancelar_cfdi(row2[0]) == 1){
+                                                                                            Info ("Venta y CFDI cancelados");
+                                                                                            gtk_widget_destroy(GTK_WIDGET (window));
+                                                                                        }else{
+                                                                                            Info("No se pudo cancelar el CFDI");
+                                                                                        }
                                                                                     }else{
-                                                                                        Info("No se pudo cancelar el CFDI");
+                                                                                        Info("Venta cancelada");
                                                                                     }
                                                                                 }
                                                                                 else
