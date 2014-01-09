@@ -6724,10 +6724,11 @@ on_btnfacturarok_clicked_ok            (GtkButton       *button,
 					{*/	
 						/****** FUNCION PARA GENERAR LA FACTURA ELECTRONICA *******/
                                                 win_trabajando = create_win_trabajando ();
+                                                gtk_widget_show (win_trabajando);
 						printf("Antes de guardar la cadena de la factura\n");
 						//sprintf(comando_factura,"%s %s normal", factura_electronica, folio);
 						printf("Antes de la factura\n");
-                                                if(timbra_cfdi(folio) == 0){
+                                                if(nuevo_cfdi(folio) == 0){
                                                     Err_Info("Ocurrió un error al timbrar el comprobante fiscal!");
                                                 }
                                                 gtk_widget_destroy(win_trabajando);
@@ -9563,46 +9564,31 @@ void Cancela_Venta()
 								er = mysql_query (&mysql,cad_SQL2);
 								if (er == 0)
 								{
-									sprintf(cad_SQL2, "UPDATE factura SET estado = '0' WHERE id_venta = %s", id_venta);
-									er = mysql_query(&mysql,cad_SQL2);
-									if(er == 0)
-									{
-										sprintf(sqlarticulos,"SELECT id_articulo, cantidad FROM Venta_Articulo WHERE id_venta = %s", id_venta);
-										er = mysql_query(&mysql, sqlarticulos);
-										if(er == 0)
-										{
-											if((res = mysql_store_result(&mysql)))
-											{
-												while((row = mysql_fetch_row(res)))
-												{
-												sprintf(sqlinventario, "UPDATE Inventario SET cantidad = cantidad + %s WHERE id_articulo = %s", row[1], row[0]);
-													er = mysql_query(&mysql, sqlinventario);
-													if(er != 0)
-													{
-													sprintf(Errores, "No se pudo reintegrar el producto al inventario\n%s", mysql_error(&mysql));
-													Err_Info (Errores);
-													}
-												}
-											}
-										}
-										else
-										{
-											sprintf(Errores, "Error: %s", mysql_error(&mysql));
-											Err_Info (Errores);
-										}
-
-										/*sprintf(sqltmp, "INSERT INTO Tabla_TMP VALUES(NULL, %s, 'cancelacion', %s)", id_venta, id_sesion_caja);
-										er = mysql_query(&mysql, sqltmp);
-										if(er == 0)	
-										{*/
-										Info ("Venta cancelada");
-										gtk_widget_destroy(GTK_WIDGET (window));
-										/*}
-										else
-											Err_Info ("Error en el registro para el corte de caja...");*/
-									}
-									else
-										Info("No se pudo cancelar la factura");
+                                                                    sprintf(cad_SQL2, "SELECT f.id_factura FROM factura f INNER JOIN Venta v ON f.id_venta = v.id_venta WHERE f.id_venta = %s", id_venta);
+                                                                    er = mysql_query(&mysql, cad_SQL2);
+                                                                    if(er == 0){
+                                                                        if((res2 = mysql_store_result(&mysql))){
+                                                                            while((row = mysql_fetch_row(res2))){
+                                                                                sprintf(cad_SQL2, "UPDATE factura SET estado = '0' WHERE id_venta = %s", id_venta);
+                                                                                er = mysql_query(&mysql,cad_SQL2);
+                                                                                if(er == 0)
+                                                                                {
+                                                                                    if(cancelar_cfdi(row[0]) == 1){
+                                                                                        Info ("Venta cancelada");
+                                                                                        gtk_widget_destroy(GTK_WIDGET (window));
+                                                                                    }else{
+                                                                                        Info("No se pudo cancelar el CFDI");
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                    Info("No se pudo cancelar la factura en la base de datos local");
+                                                                            }
+                                                                        }else{
+                                                                            g_print ("Error = %s", mysql_error(&mysql));
+                                                                        }
+                                                                    }else{
+                                                                        g_print ("Error = %s", mysql_error(&mysql));
+                                                                    }
 								}
 								else
 								{
