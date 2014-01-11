@@ -151,7 +151,7 @@ int cfdi( char *folio ){
         return 0;
 }
 
-int cfdi( char *desde, char *hasta ){
+int cfdi_cierre( char *desde, char *hasta ){
     int sockfd;
     int len, n = 0;
     struct sockaddr_in address;

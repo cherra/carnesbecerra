@@ -7847,8 +7847,8 @@ on_btn_cierre_facturar_clicked         (GtkButton       *button,
 		{
 			/****** FUNCION PARA GENERAR LA FACTURA ELECTRONICA *******/
 			//printf("Antes de guardar la cadena de la factura\n");
-                        sprintf(desde, "%s-%s-%s", deano, demes, dedia);
-                        sprintf(hasta, "%s-%s-%s", hastaano, hastames, hastadia);
+                        sprintf(desde, "%s%s%s", deano, demes, dedia);
+                        sprintf(hasta, "%s%s%s", hastaano, hastames, hastadia);
                         if(cfdi_cierre(desde, hasta) == 0){
                             Err_Info("Ocurrió un error al timbrar el comprobante fiscal de cierre!");
                         }
